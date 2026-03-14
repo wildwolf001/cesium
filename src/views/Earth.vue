@@ -110,6 +110,8 @@ export default {
             longitude: 116.397428, // 默认经度 (北京)
             latitude: 39.90923,   // 默认纬度 (北京)
             height: 300000,         // 默认高度
+            clickedLongitude: null,
+            clickedLatitude: null,
         }
     },
     methods:{
@@ -164,6 +166,16 @@ export default {
             } catch (error) {
                 console.error('Cesium地图初始化失败:', error);
             }
+
+            const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+            handler.setInputAction((click) => {
+            // 获取点击位置
+            const cartesian = this.viewer.camera.pickEllipsoid(click.position, this.viewer.scene.globe.ellipsoid);
+            if (cartesian) {
+            // 调用处理函数
+            this.destinationToLocation(cartesian);
+            }
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);  
         },
 
         flyToLocation() {
@@ -201,7 +213,16 @@ export default {
         
         console.log(`跳转到位置: 经度 ${this.longitude}, 纬度 ${this.latitude}, 高度 ${this.height}`);
         },
-    },
+
+        destinationToLocation(destination) {
+            const cartographic = Cesium.Cartographic.fromCartesian(destination);
+
+            this.clickedLongitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
+            this.clickedLatitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
+
+            console.log(`点击位置: 经度 ${this.clickedLongitude}, 纬度 ${this.clickedLatitude}`);
+            },
+
         mounted() {
         // 确保Cesium的访问令牌已设置
         if (!this.defaultAccessToken) {
@@ -216,10 +237,9 @@ export default {
         // 初始化Cesium查看器
         this.$nextTick(() => {
             this.initCesiumViewer();
-        });
-    },
-    
-};
-
+            });
+        },
+    }
+}
 
 </script>
