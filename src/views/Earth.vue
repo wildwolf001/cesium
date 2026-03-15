@@ -105,13 +105,9 @@ export default {
         return {
             viewer: null,
             defaultAccessToken: null,
-            viewer: null,
-            defaultAccessToken: null,
             longitude: 116.397428, // 默认经度 (北京)
             latitude: 39.90923,   // 默认纬度 (北京)
             height: 300000,         // 默认高度
-            clickedLongitude: null,
-            clickedLatitude: null,
         }
     },
     methods:{
@@ -146,7 +142,6 @@ export default {
                     animation: false,
                     timeline: false,
                     fullscreenButton: false,
-                    imageryProvider: false,
                 });
 
                 // 隐藏Cesium的logo
@@ -216,12 +211,12 @@ export default {
 
         destinationToLocation(destination) {
             const cartographic = Cesium.Cartographic.fromCartesian(destination);
-
-            this.clickedLongitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
-            this.clickedLatitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
-
-            console.log(`点击位置: 经度 ${this.clickedLongitude}, 纬度 ${this.clickedLatitude}`);
+            this.longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);                  
+            this.latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
             },
+
+
+    },
 
         mounted() {
         // 确保Cesium的访问令牌已设置
@@ -239,7 +234,6 @@ export default {
             this.initCesiumViewer();
             });
         },
-    }
 }
 
 </script>
